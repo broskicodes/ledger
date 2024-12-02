@@ -1,13 +1,14 @@
 import { db } from "@/lib/db/drizzle"
 import { journalEntries, accountsEntries } from "@/lib/db/schema"
+import { AccountEntry } from "@/lib/types"
 import { eq } from "drizzle-orm"
 import { NextResponse } from "next/server"
 
 export async function PUT(
   request: Request,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
-  const id = await params.id
+  const id = (await params).id
   try {
     const updatedEntry = await request.json()
 
@@ -32,13 +33,13 @@ export async function PUT(
 
       // Insert new account entries
       await tx.insert(accountsEntries).values([
-        ...updatedEntry.debits.map((debit: any) => ({
+        ...updatedEntry.debits.map((debit: AccountEntry) => ({
           entryType: 'debit',
           amount: debit.amount,
           account_id: debit.account.id,
           journalEntryId: entry.id,
         })),
-        ...updatedEntry.credits.map((credit: any) => ({
+        ...updatedEntry.credits.map((credit: AccountEntry) => ({
           entryType: 'credit',
           amount: credit.amount,
           account_id: credit.account.id,
@@ -61,9 +62,9 @@ export async function PUT(
 
 export async function DELETE(
   request: Request,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
-  const id = await params.id
+  const id = (await params).id
   try {
     await db.transaction(async (tx) => {
       // Soft delete the journal entry
