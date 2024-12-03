@@ -46,7 +46,7 @@ function evaluateMathExpression(expression: string): number {
 }
 
 export function NewEntryForm({ onAddEntry }: NewEntryFormProps) {
-  const [date, setDate] = useState(new Date(new Date().getFullYear(), new Date().getMonth(), 1).toISOString().split('T')[0])
+  const [date, setDate] = useState(new Date().toISOString().split('T')[0])
   const [description, setDescription] = useState('')
   const [debits, setDebits] = useState<AccountEntry[]>([{ 
     account: { id: '', name: '', type: 'asset' }, 
