@@ -21,6 +21,7 @@ import {
 } from "@/components/ui/dialog"
 import { Account, AccountEntry } from '@/lib/types'
 import { toast } from 'sonner'
+import { useJournalStore } from '@/stores/journal'
 
 type NewEntryFormProps = {
   onAddEntry: (entry: {
@@ -46,6 +47,7 @@ function evaluateMathExpression(expression: string): number {
 }
 
 export function NewEntryForm({ onAddEntry }: NewEntryFormProps) {
+  const { journalType } = useJournalStore()
   const [date, setDate] = useState(new Date().toISOString().split('T')[0])
   const [description, setDescription] = useState('')
   const [debits, setDebits] = useState<AccountEntry[]>([{ 
@@ -128,6 +130,7 @@ export function NewEntryForm({ onAddEntry }: NewEntryFormProps) {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           date,
+          journalType,
           description,
           debits: validDebits,
           credits: validCredits,

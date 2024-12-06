@@ -7,9 +7,15 @@ import {
     pgEnum,
   } from "drizzle-orm/pg-core";
   
-  export const journalEntries = pgTable("journal_entries", {
+export const journalTypes = pgEnum("journal_type", [
+    "personal",
+    "business"
+]);
+
+export const journalEntries = pgTable("journal_entries", {
     id: uuid("id").primaryKey().defaultRandom(),
     date: timestamp("date").notNull(),
+    journalType: journalTypes("journal_type").notNull().default("business"),
     description: text("description").notNull(),
     createdAt: timestamp("created_at").notNull().defaultNow(),
     updatedAt: timestamp("updated_at").notNull().defaultNow(),

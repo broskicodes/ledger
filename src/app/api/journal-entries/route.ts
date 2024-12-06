@@ -1,18 +1,26 @@
 import { db } from "@/lib/db/drizzle"
 import { journalEntries, accountsEntries, accounts } from "@/lib/db/schema"
-import { eq, isNull } from "drizzle-orm"
+import { eq, isNull, and } from "drizzle-orm"
 import { NextResponse } from "next/server"
 import { JournalEntry } from "@/lib/types"
 import { Trash2 } from "lucide-react"
 
-export async function GET() {
+export async function GET(request: Request) {
   try {
+    const { searchParams } = new URL(request.url)
+    const type = searchParams.get('type') ?? "business" as "personal" | "business"
+    
     const entries = await db
       .select()
       .from(journalEntries)
       .leftJoin(accountsEntries, eq(journalEntries.id, accountsEntries.journalEntryId))
       .leftJoin(accounts, eq(accountsEntries.account_id, accounts.id))
-      .where(isNull(journalEntries.deletedAt))
+      .where(
+        and(
+          isNull(journalEntries.deletedAt),
+          eq(journalEntries.journalType, type as "business" | "personal")
+        )
+      )
     
     // Group account entries by journal entry
     const formattedEntries = entries.reduce<JournalEntry[]>((acc, entry) => {
@@ -82,6 +90,7 @@ export async function POST(request: Request) {
         .values({
           date: new Date(body.date),
           description: body.description,
+          journalType: body.journalType,
         })
         .returning()
 
