@@ -147,7 +147,7 @@ export function NewEntryForm({ onAddEntry }: NewEntryFormProps) {
       })
 
       // Reset form
-      setDate(new Date(new Date().getFullYear(), new Date().getMonth() - 1, 1).toISOString().split('T')[0])
+      setDate(new Date().toISOString().split('T')[0])
       setDescription('')
       setDebits([{ account: { id: '', name: '', type: 'asset' }, amount: 0 }])
       setCredits([{ account: { id: '', name: '', type: 'asset' }, amount: 0 }])
